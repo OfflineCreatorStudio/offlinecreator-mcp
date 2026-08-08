@@ -50,7 +50,7 @@ jobs:
           registry-url: https://registry.npmjs.org
           package-manager-cache: false
       - name: Verify npm supports trusted publishing
-        run: node -e "const [a,b,c]=process.versions.npm.split('.').map(Number); if(a<11 || (a===11 && (b<5 || (b===5 && c<1)))) throw new Error('npm 11.5.1 or newer is required')"
+        run: node -e "const [a,b,c]=require('node:child_process').execFileSync('npm',['--version'],{encoding:'utf8'}).trim().split('.').map(Number); if(a<11 || (a===11 && (b<5 || (b===5 && c<1)))) throw new Error('npm 11.5.1 or newer is required')"
       - name: Install locked dependencies
         run: npm ci
       - name: Run full validation
