@@ -1,0 +1,18 @@
+{
+  "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
+  "name": "offlinecreator-mcp",
+  "version": "0.1.2",
+  "description": "Connect agents to OfflineCreator Studio image and video generation tools.",
+  "author": {
+    "name": "OfflineCreator Studio"
+  },
+  "homepage": "https://offlinecreatorstudio.com/mcp-cli",
+  "repository": "https://github.com/OfflineCreatorStudio/offlinecreator-mcp",
+  "license": "MIT",
+  "keywords": [
+    "mcp",
+    "image-generation",
+    "video-generation",
+    "offlinecreator"
+  ]
+}

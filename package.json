@@ -1,0 +1,88 @@
+{
+  "name": "@offlinecreator/mcp",
+  "version": "0.1.2",
+  "mcpName": "com.offlinecreatorstudio/mcp",
+  "description": "OfflineCreator Studio MCP server for remote OAuth and local stdio clients",
+  "type": "module",
+  "bin": {
+    "offlinecreator-mcp": "dist/index.js"
+  },
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    },
+    "./server": {
+      "types": "./dist/server.d.ts",
+      "import": "./dist/server.js"
+    },
+    "./config": {
+      "types": "./dist/config.d.ts",
+      "import": "./dist/config.js"
+    },
+    "./oauth-bridge": {
+      "types": "./dist/oauth-bridge.d.ts",
+      "import": "./dist/oauth-bridge.js"
+    }
+  },
+  "files": [
+    "dist",
+    "!dist/**/*.test.js",
+    "!dist/**/*.test.d.ts",
+    "README.md",
+    "LICENSE"
+  ],
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "dev": "tsc -p tsconfig.json --watch",
+    "start": "node dist/index.js",
+    "test": "npm run build && node --test dist/config.test.js dist/oauth-bridge.test.js dist/safe-fs.test.js dist/server.test.js",
+    "validate:manifests": "node scripts/validate-manifests.mjs",
+    "validate:schemas": "node scripts/validate-official-schemas.mjs",
+    "validate:docs": "node scripts/check-doc-links.mjs",
+    "validate:assets": "node scripts/validate-assets.mjs",
+    "validate:pack": "node scripts/validate-pack.mjs",
+    "scan:public": "node scripts/scan-public.mjs",
+    "validate": "npm test && npm run validate:manifests && npm run validate:schemas && npm run validate:docs && npm run validate:assets && npm run validate:pack && npm run scan:public",
+    "prepublishOnly": "npm run validate"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "keywords": [
+    "mcp",
+    "offlinecreator",
+    "cursor",
+    "claude",
+    "image-generation",
+    "video-generation"
+  ],
+  "license": "MIT",
+  "homepage": "https://offlinecreatorstudio.com/mcp-cli",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/OfflineCreatorStudio/offlinecreator-mcp.git"
+  },
+  "bugs": {
+    "url": "https://github.com/OfflineCreatorStudio/offlinecreator-mcp/issues"
+  },
+  "author": {
+    "name": "OfflineCreator Studio",
+    "url": "https://offlinecreatorstudio.com"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/server": "^2.0.0",
+    "zod": "^4.4.3"
+  },
+  "devDependencies": {
+    "@types/node": "^20",
+    "ajv": "^8.20.0",
+    "ajv-formats": "^3.0.1",
+    "typescript": "^5"
+  }
+}

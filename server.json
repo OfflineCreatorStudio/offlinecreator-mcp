@@ -1,0 +1,37 @@
+{
+  "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
+  "name": "com.offlinecreatorstudio/mcp",
+  "title": "OfflineCreator Studio",
+  "description": "Create images and videos with OfflineCreator Studio through OAuth or the npm stdio server.",
+  "version": "0.1.2",
+  "websiteUrl": "https://offlinecreatorstudio.com/mcp-cli",
+  "repository": {
+    "url": "https://github.com/OfflineCreatorStudio/offlinecreator-mcp",
+    "source": "github"
+  },
+  "remotes": [
+    {
+      "type": "streamable-http",
+      "url": "https://mcp.offlinecreatorstudio.com/mcp"
+    }
+  ],
+  "packages": [
+    {
+      "registryType": "npm",
+      "identifier": "@offlinecreator/mcp",
+      "version": "0.1.2",
+      "transport": {
+        "type": "stdio"
+      },
+      "environmentVariables": [
+        {
+          "name": "OFFLINECREATOR_API_KEY",
+          "description": "Personal API key created in OfflineCreator Studio Settings. Required only for local stdio.",
+          "isRequired": true,
+          "isSecret": true,
+          "format": "string"
+        }
+      ]
+    }
+  ]
+}

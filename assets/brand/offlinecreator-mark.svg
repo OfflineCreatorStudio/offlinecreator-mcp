@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none" aria-hidden="true">
+  <path
+    fill="#fff"
+    d="M32 4.5c1.15 10.4 4.55 18.2 12.85 23C36.55 32.3 33.15 40.1 32 50.5c-1.15-10.4-4.55-18.2-12.85-23C27.45 22.7 30.85 14.9 32 4.5Z"
+  />
+  <path
+    stroke="#fff"
+    stroke-width="3.4"
+    stroke-linecap="round"
+    d="M49 13.5v10.5M43.75 18.75H54.25"
+  />
+  <circle
+    cx="15.75"
+    cy="49"
+    r="4.35"
+    stroke="#fff"
+    stroke-width="2.8"
+  />
+</svg>
