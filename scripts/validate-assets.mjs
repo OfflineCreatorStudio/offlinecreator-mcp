@@ -21,4 +21,6 @@ for (const [file, [expectedWidth, expectedHeight]] of expected) {
 const alt = (await readFile("assets/brand/social-card-alt.txt", "utf8")).trim();
 assert.ok(alt.length >= 20, "Social card alt text must be descriptive.");
 
-console.log("PNG dimensions, RGBA channels, and social-card alt text passed (4 files).");
+console.log(
+  "PNG dimensions, RGBA channels, and social-card alt text passed (4 files).",
+);

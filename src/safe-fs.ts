@@ -12,13 +12,7 @@ export {
   sniffImageType,
 } from "./safe-image.js";
 
-const ALLOWED_EXTENSIONS = new Set([
-  ".png",
-  ".jpg",
-  ".jpeg",
-  ".webp",
-  ".gif",
-]);
+const ALLOWED_EXTENSIONS = new Set([".png", ".jpg", ".jpeg", ".webp", ".gif"]);
 
 export type SafeImageRead = SafeImageData;
 
@@ -90,8 +84,6 @@ export function isPathInsideRoot(resolvedPath: string, rootDir: string) {
   if (resolved === root) return false; // must be a file, not the root dir itself
   const relative = path.relative(root, resolved);
   return (
-    relative !== "" &&
-    !relative.startsWith("..") &&
-    !path.isAbsolute(relative)
+    relative !== "" && !relative.startsWith("..") && !path.isAbsolute(relative)
   );
 }

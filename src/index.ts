@@ -38,7 +38,9 @@ async function main() {
 
 main().catch((error) => {
   console.error(
-    error instanceof Error ? error.message : "Failed to start offlinecreator-mcp",
+    error instanceof Error
+      ? error.message
+      : "Failed to start offlinecreator-mcp",
   );
   process.exitCode = 1;
 });

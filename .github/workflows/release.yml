@@ -1,0 +1,159 @@
+name: Release npm Package
+
+on:
+  push:
+    tags:
+      - "v*"
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: Existing version tag to release (for example, v0.1.2)
+        required: true
+        type: string
+
+permissions: {}
+
+concurrency:
+  group: npm-production
+  cancel-in-progress: false
+
+jobs:
+  prepare:
+    name: Validate and prepare release
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    env:
+      RELEASE_TAG: ${{ github.event_name == 'workflow_dispatch' && inputs.tag || github.ref_name }}
+    steps:
+      - name: Check out the release tag
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ env.RELEASE_TAG }}
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Verify tag, version, and commit
+        id: release-ref
+        shell: bash
+        run: |
+          set -euo pipefail
+          VERSION="$(node -p "require('./package.json').version")"
+          TAG_COMMIT="$(git rev-parse "${RELEASE_TAG}^{commit}")"
+          test "$RELEASE_TAG" = "v$VERSION"
+          test "$(git rev-parse HEAD)" = "$TAG_COMMIT"
+          if test "$GITHUB_EVENT_NAME" = "push"; then test "$TAG_COMMIT" = "$GITHUB_SHA"; fi
+          echo "commit=$TAG_COMMIT" >> "$GITHUB_OUTPUT"
+      - name: Set up Node.js for trusted publishing
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: "24"
+          registry-url: https://registry.npmjs.org
+          package-manager-cache: false
+      - name: Verify npm supports trusted publishing
+        run: node -e "const [a,b,c]=process.versions.npm.split('.').map(Number); if(a<11 || (a===11 && (b<5 || (b===5 && c<1)))) throw new Error('npm 11.5.1 or newer is required')"
+      - name: Install locked dependencies
+        run: npm ci
+      - name: Run full validation
+        run: npm run validate
+      - name: Run safe remote smoke test
+        run: npm run test:remote
+      - name: Build release artifacts
+        run: npm run release:prepare
+        env:
+          RELEASE_COMMIT: ${{ steps.release-ref.outputs.commit }}
+      - name: Verify release artifact digests and contents
+        run: npm run release:verify
+        env:
+          RELEASE_COMMIT: ${{ steps.release-ref.outputs.commit }}
+      - name: Upload staged release artifacts
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: npm-release-${{ env.RELEASE_TAG }}
+          path: release/
+          if-no-files-found: error
+          retention-days: 7
+
+  publish:
+    name: Publish npm and immutable GitHub release
+    needs: prepare
+    runs-on: ubuntu-latest
+    environment: npm-production
+    permissions:
+      attestations: write
+      artifact-metadata: write
+      contents: write
+      id-token: write
+    env:
+      RELEASE_TAG: ${{ github.event_name == 'workflow_dispatch' && inputs.tag || github.ref_name }}
+    steps:
+      - name: Check out the release tag
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ env.RELEASE_TAG }}
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Set up Node.js for trusted publishing
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: "24"
+          registry-url: https://registry.npmjs.org
+          package-manager-cache: false
+      - name: Install locked dependencies
+        run: npm ci
+      - name: Resolve the tagged commit
+        shell: bash
+        run: |
+          set -euo pipefail
+          TAG_COMMIT="$(git rev-parse "${RELEASE_TAG}^{commit}")"
+          test "$(git rev-parse HEAD)" = "$TAG_COMMIT"
+          echo "RELEASE_COMMIT=$TAG_COMMIT" >> "$GITHUB_ENV"
+      - name: Download staged release artifacts
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
+        with:
+          name: npm-release-${{ env.RELEASE_TAG }}
+          path: release/
+      - name: Reverify tag, commit, and release digests
+        shell: bash
+        run: |
+          set -euo pipefail
+          npm run release:verify
+      - name: Attest npm tarball provenance
+        id: provenance
+        uses: actions/attest@1e69f48acb82d1966a394da916b4c1698aa569d6 # v4.2.2
+        with:
+          subject-path: release/*.tgz
+      - name: Attest npm tarball SBOM
+        id: sbom-attestation
+        uses: actions/attest@1e69f48acb82d1966a394da916b4c1698aa569d6 # v4.2.2
+        with:
+          subject-path: release/*.tgz
+          sbom-path: release/offlinecreator-mcp-0.1.2.cyclonedx.json
+      - name: Preserve attestation bundles
+        shell: bash
+        env:
+          PROVENANCE_BUNDLE: ${{ steps.provenance.outputs.bundle-path }}
+          SBOM_BUNDLE: ${{ steps.sbom-attestation.outputs.bundle-path }}
+        run: |
+          set -euo pipefail
+          cp "$PROVENANCE_BUNDLE" release/provenance.attestation.json
+          cp "$SBOM_BUNDLE" release/sbom.attestation.json
+      - name: Publish to npm with Trusted Publishing OIDC
+        run: npm publish release/offlinecreator-mcp-0.1.2.tgz --access public
+      - name: Create immutable-ready GitHub release
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          gh release create "$RELEASE_TAG" \
+            --draft \
+            --verify-tag \
+            --title "@offlinecreator/mcp ${RELEASE_TAG#v}" \
+            --notes-file release/release-notes.md
+          gh release upload "$RELEASE_TAG" \
+            release/*.tgz \
+            release/*.cyclonedx.json \
+            release/*.sha256 \
+            release/release-manifest.json \
+            release/*.attestation.json
+          gh release edit "$RELEASE_TAG" --draft=false

@@ -37,15 +37,26 @@
   "scripts": {
     "build": "tsc -p tsconfig.json",
     "dev": "tsc -p tsconfig.json --watch",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
     "start": "node dist/index.js",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
     "test": "npm run build && node --test dist/config.test.js dist/oauth-bridge.test.js dist/safe-fs.test.js dist/server.test.js",
+    "test:stdio": "npm run build && node scripts/smoke-stdio.mjs",
+    "test:remote": "node scripts/smoke-remote.mjs",
+    "audit:dependencies": "npm audit --audit-level=high",
+    "check:licenses": "node scripts/check-licenses.mjs",
+    "check:action-pins": "node scripts/verify-action-pins.mjs",
     "validate:manifests": "node scripts/validate-manifests.mjs",
     "validate:schemas": "node scripts/validate-official-schemas.mjs",
     "validate:docs": "node scripts/check-doc-links.mjs",
     "validate:assets": "node scripts/validate-assets.mjs",
     "validate:pack": "node scripts/validate-pack.mjs",
     "scan:public": "node scripts/scan-public.mjs",
-    "validate": "npm test && npm run validate:manifests && npm run validate:schemas && npm run validate:docs && npm run validate:assets && npm run validate:pack && npm run scan:public",
+    "release:prepare": "node scripts/prepare-release.mjs",
+    "release:verify": "node scripts/verify-release-artifacts.mjs",
+    "scan:history": "node scripts/scan-git-history.mjs",
+    "validate": "npm run format:check && npm run typecheck && npm test && npm run validate:manifests && npm run validate:schemas && npm run validate:docs && npm run validate:assets && npm run validate:pack && npm run scan:public && npm run scan:history && npm run check:licenses && npm run check:action-pins && npm run test:stdio",
     "prepublishOnly": "npm run validate"
   },
   "engines": {
@@ -83,6 +94,7 @@
     "@types/node": "^20",
     "ajv": "^8.20.0",
     "ajv-formats": "^3.0.1",
+    "prettier": "^3.9.6",
     "typescript": "^5"
   }
 }

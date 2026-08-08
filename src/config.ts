@@ -34,7 +34,10 @@ export function loadConfig(env: NodeJS.ProcessEnv = process.env): McpConfig {
   }
 
   const apiBase = assertTrustedApiBase(
-    (env.OFFLINECREATOR_API_BASE?.trim() || DEFAULT_API_BASE).replace(/\/$/, ""),
+    (env.OFFLINECREATOR_API_BASE?.trim() || DEFAULT_API_BASE).replace(
+      /\/$/,
+      "",
+    ),
     env,
   );
 

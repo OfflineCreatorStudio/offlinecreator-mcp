@@ -8,4 +8,7 @@ All notable public package changes are documented here.
 - Preserved the public `./oauth-bridge` export and focused cryptographic tests required by the hosted OAuth Worker.
 - Added tool annotations, upload path and image validation, trusted-origin checks, and package tests.
 - Added synchronized registry, plugin, documentation, security, and release-validation artifacts.
+- Added least-privilege CI, dependency review, CodeQL, protected tokenless npm
+  publishing, attestations, SBOM/checksum generation, immutable Release
+  handling, and separately gated MCP Registry publishing.
 - Excluded proprietary hosted backend, OAuth service, billing, provider, application, and deployment code from the public distribution.

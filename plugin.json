@@ -9,10 +9,5 @@
   "homepage": "https://offlinecreatorstudio.com/mcp-cli",
   "repository": "https://github.com/OfflineCreatorStudio/offlinecreator-mcp",
   "license": "MIT",
-  "keywords": [
-    "mcp",
-    "image-generation",
-    "video-generation",
-    "offlinecreator"
-  ]
+  "keywords": ["mcp", "image-generation", "video-generation", "offlinecreator"]
 }

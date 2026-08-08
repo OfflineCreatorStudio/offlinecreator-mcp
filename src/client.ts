@@ -1,8 +1,5 @@
 import type { McpConfig } from "./config.js";
-import {
-  decodeSafeImageBase64,
-  MCP_MAX_INPUT_BYTES,
-} from "./safe-image.js";
+import { decodeSafeImageBase64, MCP_MAX_INPUT_BYTES } from "./safe-image.js";
 
 const UUID_RE =
   /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
@@ -34,7 +31,9 @@ export class StudioApiClient {
       } catch {
         // ignore malformed absolute URLs
       }
-      throw new Error("Refusing to expose an output URL outside the Studio API origin.");
+      throw new Error(
+        "Refusing to expose an output URL outside the Studio API origin.",
+      );
     }
     return `${this.config.apiBase}${pathOrUrl.startsWith("/") ? "" : "/"}${pathOrUrl}`;
   }
@@ -44,7 +43,9 @@ export class StudioApiClient {
   }
 
   async getCredits() {
-    return this.request<{ balance: number; currency: string }>("/api/v1/credits");
+    return this.request<{ balance: number; currency: string }>(
+      "/api/v1/credits",
+    );
   }
 
   async listGenerations(limit = 20) {

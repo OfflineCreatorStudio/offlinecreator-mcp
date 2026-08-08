@@ -1,0 +1,97 @@
+name: Publish MCP Registry Metadata
+
+on:
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: Existing npm/GitHub version tag (for example, v0.1.2)
+        required: true
+        type: string
+
+permissions: {}
+
+concurrency:
+  group: mcp-registry-production
+  cancel-in-progress: false
+
+jobs:
+  validate:
+    name: Validate registry metadata
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    env:
+      RELEASE_TAG: ${{ inputs.tag }}
+    steps:
+      - name: Check out the release tag
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ env.RELEASE_TAG }}
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Set up Node.js
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: "24"
+          package-manager-cache: false
+      - name: Install locked dependencies
+        run: npm ci
+      - name: Verify exact tag and manifest versions
+        shell: bash
+        run: |
+          set -euo pipefail
+          VERSION="$(node -p "require('./package.json').version")"
+          test "$RELEASE_TAG" = "v$VERSION"
+          test "$(git rev-parse HEAD)" = "$(git rev-parse "${RELEASE_TAG}^{commit}")"
+          npm run validate:manifests
+      - name: Validate server.json against the official schema
+        run: npm run validate:schemas
+      - name: Require the matching npm package version
+        shell: bash
+        run: |
+          set -euo pipefail
+          VERSION="$(node -p "require('./package.json').version")"
+          test "$(npm view "@offlinecreator/mcp@$VERSION" version)" = "$VERSION"
+
+  publish:
+    name: Publish protected registry metadata
+    needs: validate
+    runs-on: ubuntu-latest
+    environment: mcp-registry-production
+    permissions:
+      contents: read
+    env:
+      RELEASE_TAG: ${{ inputs.tag }}
+      MCP_PRIVATE_KEY: ${{ secrets.MCP_PRIVATE_KEY }}
+    steps:
+      - name: Check out the release tag
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ env.RELEASE_TAG }}
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Reverify tag and metadata
+        shell: bash
+        run: |
+          set -euo pipefail
+          VERSION="$(node -p "require('./package.json').version")"
+          test "$RELEASE_TAG" = "v$VERSION"
+          test "$(git rev-parse HEAD)" = "$(git rev-parse "${RELEASE_TAG}^{commit}")"
+          test "$(node -p "require('./server.json').version")" = "$VERSION"
+      - name: Install verified MCP publisher v1.8.1
+        shell: bash
+        run: |
+          set -euo pipefail
+          URL="https://github.com/modelcontextprotocol/registry/releases/download/v1.8.1/mcp-publisher_linux_amd64.tar.gz"
+          curl --fail --location --proto '=https' --tlsv1.2 "$URL" --output mcp-publisher.tar.gz
+          echo "a06c9096dcb9727c13555b6be26c7effa707b01f06a4c561ba7a3635443cf2cc  mcp-publisher.tar.gz" | sha256sum --check
+          tar -xzf mcp-publisher.tar.gz mcp-publisher
+          chmod +x mcp-publisher
+      - name: Authenticate with protected DNS proof
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -n "$MCP_PRIVATE_KEY"
+          ./mcp-publisher login dns --domain offlinecreatorstudio.com --private-key "$MCP_PRIVATE_KEY"
+      - name: Publish server.json
+        run: ./mcp-publisher publish

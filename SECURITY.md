@@ -14,4 +14,13 @@ Do not open a public issue. Email `security@offlinecreatorstudio.com` with repro
 - Local stdio requires `OFFLINECREATOR_API_KEY`. Keep it in the client secret store or process environment, never in source control, URLs, logs, or issue reports.
 - Revoke a suspected key from [Studio Settings](https://offlinecreatorstudio.com/settings).
 
+## Release integrity
+
+npm releases use GitHub-hosted runners and npm Trusted Publishing OIDC without
+a long-lived npm token. Release tarballs, checksums, CycloneDX SBOMs, manifests,
+and attestations are attached to immutable GitHub Releases. MCP Registry
+publishing is a separate, protected deployment. Maintainer configuration and
+verification commands are documented in
+[release operations](docs/releasing.md).
+
 See [security controls](docs/security.md) and the [threat model](docs/threat-model.md).

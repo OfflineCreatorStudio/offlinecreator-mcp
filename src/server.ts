@@ -330,7 +330,10 @@ export function createOfflineCreatorServer(
         const status = client.withAbsoluteOutput(
           await client.getGeneration(generationId),
         );
-        if (status.status !== "completed" || typeof status.outputUrl !== "string") {
+        if (
+          status.status !== "completed" ||
+          typeof status.outputUrl !== "string"
+        ) {
           return textResult(
             {
               error: "Generation is not completed with an output yet.",

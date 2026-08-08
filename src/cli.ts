@@ -37,7 +37,7 @@ export async function runCli(args: string[], config: McpConfig) {
       const prompt = options.prompt;
       if (!modelId || !prompt) {
         console.error(
-          "Usage: offlinecreator-mcp generate --model flux-schnell --prompt \"…\" [--wait]",
+          'Usage: offlinecreator-mcp generate --model flux-schnell --prompt "…" [--wait]',
         );
         return 1;
       }

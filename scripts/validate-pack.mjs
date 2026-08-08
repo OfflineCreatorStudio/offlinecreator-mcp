@@ -7,15 +7,20 @@ const result = spawnSync(
   process.execPath,
   [npmCli, "pack", "--dry-run", "--json"],
   {
-  encoding: "utf8",
+    encoding: "utf8",
   },
 );
-if (result.status !== 0) throw new Error(result.stderr || "npm pack --dry-run failed");
+if (result.status !== 0)
+  throw new Error(result.stderr || "npm pack --dry-run failed");
 const report = JSON.parse(result.stdout);
 const names = report[0].files.map((file) => file.path).sort();
 const allowed = ["LICENSE", "README.md", "package.json"];
 for (const name of names) {
-  assert.ok(allowed.includes(name) || (name.startsWith("dist/") && !name.includes(".test.")), `Unexpected packed file: ${name}`);
+  assert.ok(
+    allowed.includes(name) ||
+      (name.startsWith("dist/") && !name.includes(".test.")),
+    `Unexpected packed file: ${name}`,
+  );
 }
 for (const required of [
   "dist/index.js",

@@ -18,7 +18,10 @@ describe("safe-fs", () => {
   it("keeps paths inside the upload root", () => {
     const root = path.resolve("/tmp/oc-upload-root");
     assert.equal(isPathInsideRoot(path.join(root, "a.png"), root), true);
-    assert.equal(isPathInsideRoot(path.join(root, "..", "secret.png"), root), false);
+    assert.equal(
+      isPathInsideRoot(path.join(root, "..", "secret.png"), root),
+      false,
+    );
   });
 
   it("reads an in-root PNG and rejects escape attempts", async () => {

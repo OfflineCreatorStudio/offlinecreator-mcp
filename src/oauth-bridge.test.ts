@@ -35,13 +35,10 @@ describe("OAuth service bridge signatures", () => {
   });
 
   it("rejects body tampering and expired signatures", async () => {
-    const unsigned = new Request(
-      "https://studio.internal/api/v1/generations",
-      {
-        method: "POST",
-        body: JSON.stringify({ prompt: "original" }),
-      },
-    );
+    const unsigned = new Request("https://studio.internal/api/v1/generations", {
+      method: "POST",
+      body: JSON.stringify({ prompt: "original" }),
+    });
     const signedHeaders = await signOAuthBridgeRequest({
       request: unsigned,
       secret,

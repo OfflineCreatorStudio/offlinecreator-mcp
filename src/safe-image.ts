@@ -1,10 +1,7 @@
 export const MCP_MAX_INPUT_BYTES = 10 * 1024 * 1024;
 
 export type ImageContentType =
-  | "image/png"
-  | "image/jpeg"
-  | "image/webp"
-  | "image/gif";
+  "image/png" | "image/jpeg" | "image/webp" | "image/gif";
 
 export type SafeImageData = {
   bytes: Buffer;

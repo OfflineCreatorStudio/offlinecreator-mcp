@@ -22,8 +22,9 @@ function base64Url(bytes: Uint8Array) {
 
 function fromBase64Url(value: string) {
   try {
-    const padded = value.replace(/-/g, "+").replace(/_/g, "/")
-      + "=".repeat((4 - (value.length % 4)) % 4);
+    const padded =
+      value.replace(/-/g, "+").replace(/_/g, "/") +
+      "=".repeat((4 - (value.length % 4)) % 4);
     const binary = atob(padded);
     return Uint8Array.from(binary, (character) => character.charCodeAt(0));
   } catch {
@@ -86,9 +87,7 @@ export async function signOAuthBridgeRequest(input: {
     userId: input.identity.userId,
     scopes: normalizeScopes(input.identity.scopes),
   };
-  const timestamp = String(
-    Math.floor(input.nowSeconds ?? Date.now() / 1000),
-  );
+  const timestamp = String(Math.floor(input.nowSeconds ?? Date.now() / 1000));
   const key = await importHmacKey(input.secret);
   const canonical = await canonicalRequest(input.request, identity, timestamp);
   const signature = await crypto.subtle.sign(
@@ -123,18 +122,15 @@ export async function verifyOAuthBridgeRequest(input: {
   const issuedAt = Number(timestamp);
   const now = Math.floor(input.nowSeconds ?? Date.now() / 1000);
   const skew = input.maxClockSkewSeconds ?? 60;
-  if (
-    !Number.isInteger(issuedAt)
-    || Math.abs(now - issuedAt) > skew
-  ) {
+  if (!Number.isInteger(issuedAt) || Math.abs(now - issuedAt) > skew) {
     return null;
   }
 
   const requestedScopes = scopeValue ? scopeValue.split(/\s+/) : [];
   const scopes = normalizeScopes(requestedScopes);
   if (
-    scopes.length !== requestedScopes.length
-    || scopes.join(" ") !== requestedScopes.join(" ")
+    scopes.length !== requestedScopes.length ||
+    scopes.join(" ") !== requestedScopes.join(" ")
   ) {
     return null;
   }
@@ -157,6 +153,8 @@ export async function verifyOAuthBridgeRequest(input: {
 }
 
 export function hasOAuthBridgeHeaders(request: Request) {
-  return request.headers.has(OAUTH_USER_HEADER)
-    || request.headers.has(OAUTH_SIGNATURE_HEADER);
+  return (
+    request.headers.has(OAUTH_USER_HEADER) ||
+    request.headers.has(OAUTH_SIGNATURE_HEADER)
+  );
 }

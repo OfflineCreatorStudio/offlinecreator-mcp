@@ -49,13 +49,18 @@ npm ci
 npm run validate
 ```
 
-The validation suite builds, tests, checks manifest/version consistency, checks local documentation links, inspects the npm dry-run file list, and scans public files for common secret and production-ID patterns.
+The validation suite also checks formatting, types, dependency licenses,
+workflow action pins, stdio initialization, manifest/version consistency, local
+documentation links, the exact npm file list, and public files and Git history
+for secret patterns. See the [release and supply-chain operations](docs/releasing.md)
+for protected publishing and maintainer settings.
 
 ## Policy and legal
 
 Anthropic's current Software Directory Policy does not accept software whose primary service is AI-generated images, video, or audio. OfflineCreator Studio is therefore not eligible for the public Claude Connectors Directory at this time. Claude custom connectors remain supported through the remote MCP URL.
 
 - [Security](SECURITY.md)
+- [Release operations](docs/releasing.md)
 - [Support](SUPPORT.md)
 - [Contributing](CONTRIBUTING.md)
 - [Privacy](https://offlinecreatorstudio.com/privacy)
