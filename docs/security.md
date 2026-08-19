@@ -8,6 +8,7 @@ The public package minimizes local authority and credential exposure:
 - Local file uploads are jailed under `OFFLINECREATOR_UPLOAD_ROOT`, extension-allowlisted, size-limited, and checked by image magic bytes.
 - Remote MCP has no local filesystem access and uses OAuth discovery instead of static keys.
 - Tool annotations identify read-only and destructive behavior.
+- Agent Readiness documents are public metadata. Web Bot Auth private JWKs and payment wallets stay in the hosted Worker environment and are never committed.
 
 The hosted service separately enforces authentication, authorization, usage policy, ownership, and account controls. Its proprietary implementation is outside this repository.
 

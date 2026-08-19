@@ -27,6 +27,8 @@ for (const required of [
   "dist/index.d.ts",
   "dist/oauth-bridge.js",
   "dist/oauth-bridge.d.ts",
+  "dist/agent-readiness.js",
+  "dist/agent-readiness.d.ts",
   ...allowed,
 ]) {
   assert.ok(names.includes(required), `Missing packed file: ${required}`);

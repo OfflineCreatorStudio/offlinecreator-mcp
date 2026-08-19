@@ -34,13 +34,13 @@ For local stdio:
 }
 ```
 
-See [installation](docs/install.md), [client setup](docs/clients.md), and [OAuth](docs/oauth.md).
+See [installation](docs/install.md), [client setup](docs/clients.md), [OAuth](docs/oauth.md), and [agent readiness](docs/agent-readiness.md).
 
 ## Tools
 
 `list_models`, `get_credits`, `generate`, `upload_input`, `get_generation`, `wait_generation`, `download_output`, `cancel_generation`, and `list_generations`.
 
-The public package contains the thin API client, stdio MCP server, and the reusable cryptographic request bridge exported as `@offlinecreator/mcp/oauth-bridge`. The hosted API, OAuth Worker, moderation, account, credit, and generation backend are proprietary and are not included in this repository.
+The public package contains the thin API client, stdio MCP server, the reusable cryptographic request bridge exported as `@offlinecreator/mcp/oauth-bridge`, and the Agent Readiness discovery handler exported as `@offlinecreator/mcp/agent-readiness`. The hosted API, OAuth Worker, moderation, account, credit, and generation backend are proprietary and are not included in this repository.
 
 ## Development
 

@@ -1,0 +1,23 @@
+; DNS for AI Discovery (DNS-AID) records for OfflineCreator Studio.
+; Add these in the Cloudflare DNS dashboard, then enable DNSSEC.
+; Scanner queries (DoH): _index._agents, _a2a._agents, _mcp._agents
+;
+; Cloudflare UI: create HTTPS or SVCB records. Priority 1, target the
+; MCP host, alpn h2/h3 or a2a, port 443.
+
+$ORIGIN offlinecreatorstudio.com.
+$TTL 3600
+
+_index._agents  3600  IN  HTTPS  1 mcp.offlinecreatorstudio.com. alpn="h2,h3" port=443
+_mcp._agents    3600  IN  HTTPS  1 mcp.offlinecreatorstudio.com. alpn="h2,h3" port=443
+_a2a._agents    3600  IN  SVCB   1 mcp.offlinecreatorstudio.com. alpn="a2a" port=443 mandatory=alpn,port
+
+; Optional index TXT (some resolvers read this alongside SVCB/HTTPS)
+_index._agents  3600  IN  TXT    "mcp=https://mcp.offlinecreatorstudio.com/mcp a2a=https://mcp.offlinecreatorstudio.com/.well-known/agent-card.json"
+
+; Repeat under the MCP hostname if that origin is scanned directly.
+$ORIGIN mcp.offlinecreatorstudio.com.
+
+_index._agents  3600  IN  HTTPS  1 mcp.offlinecreatorstudio.com. alpn="h2,h3" port=443
+_mcp._agents    3600  IN  HTTPS  1 mcp.offlinecreatorstudio.com. alpn="h2,h3" port=443
+_a2a._agents    3600  IN  SVCB   1 mcp.offlinecreatorstudio.com. alpn="a2a" port=443 mandatory=alpn,port

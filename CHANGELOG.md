@@ -2,6 +2,11 @@
 
 All notable public package changes are documented here.
 
+## Unreleased
+
+- Added `@offlinecreator/mcp/agent-readiness` so the hosted MCP Worker can publish OAuth, MCP, A2A, skills, commerce, WebMCP, markdown, robots Content Signals, Link headers, and Web Bot Auth discovery documents.
+- Documented DNS-AID records and the Agent Readiness workflow for mounting the handler and re-scanning production.
+
 ## 0.1.2 - 2026-08-07
 
 - Added the remote-first OAuth endpoint and retained the API-key stdio fallback.

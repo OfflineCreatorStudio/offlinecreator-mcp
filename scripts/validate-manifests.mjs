@@ -18,6 +18,10 @@ assert.deepEqual(pkg.exports?.["./oauth-bridge"], {
   types: "./dist/oauth-bridge.d.ts",
   import: "./dist/oauth-bridge.js",
 });
+assert.deepEqual(pkg.exports?.["./agent-readiness"], {
+  types: "./dist/agent-readiness.d.ts",
+  import: "./dist/agent-readiness.js",
+});
 assert.equal(
   plugin.$schema,
   "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
