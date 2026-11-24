@@ -4,7 +4,19 @@ import { assertTrustedApiBase, loadConfig } from "./config.js";
 
 describe("loadConfig", () => {
   it("requires an API key", () => {
-    assert.throws(() => loadConfig({}), /OFFLINECREATOR_API_KEY/);
+    assert.throws(
+      () => loadConfig({}),
+      (error: unknown) => {
+        assert(error instanceof Error);
+        assert.match(error.message, /OFFLINECREATOR_API_KEY/);
+        assert.match(
+          error.message,
+          /https:\/\/offlinecreatorstudio\.com\/auth\?next=\/settings/,
+        );
+        assert.match(error.message, /sign in or create an account/i);
+        return true;
+      },
+    );
   });
 
   it("accepts oc_live_ and oc_test_ keys against the default host", () => {
@@ -48,13 +60,10 @@ describe("loadConfig", () => {
     );
   });
 
-  it("does not allow an override for untrusted hosts", () => {
-    assert.throws(
-      () =>
-        assertTrustedApiBase("https://staging.example", {
-          OFFLINECREATOR_ALLOW_INSECURE_API_BASE: "true",
-        }),
-      /not trusted/i,
-    );
+  it("allows explicit insecure override for private staging", () => {
+    const base = assertTrustedApiBase("https://staging.example", {
+      OFFLINECREATOR_ALLOW_INSECURE_API_BASE: "true",
+    });
+    assert.equal(base, "https://staging.example");
   });
 });

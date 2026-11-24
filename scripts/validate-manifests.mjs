@@ -8,7 +8,8 @@ const [pkg, plugin, mcp, server] = await Promise.all([
   readJson("mcp.json"),
   readJson("server.json"),
 ]);
-const version = "0.1.2";
+const version = pkg.version;
+assert.equal(version, "0.1.5");
 assert.equal(pkg.version, version);
 assert.equal(plugin.version, version);
 assert.equal(server.version, version);
@@ -48,6 +49,14 @@ assert.deepEqual(server.packages?.[0]?.environmentVariables, [
     description:
       "Personal API key created in OfflineCreator Studio Settings. Required only for local stdio.",
     isRequired: true,
+    isSecret: true,
+    format: "string",
+  },
+  {
+    name: "X402_EVM_PRIVATE_KEY",
+    description:
+      "Optional EVM wallet private key for stdio x402 USDC payments. Not used by remote OAuth.",
+    isRequired: false,
     isSecret: true,
     format: "string",
   },

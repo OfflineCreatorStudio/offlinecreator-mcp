@@ -1,6 +1,6 @@
 # npm checklist
 
-- [ ] Confirm version `0.1.2` is available and intended.
+- [ ] Confirm version `0.1.5` is available and intended.
 - [ ] Run `npm ci` and `npm run validate`.
 - [ ] Review the `npm pack --dry-run` allowlist output.
 - [ ] Confirm `mcpName` matches `server.json`.

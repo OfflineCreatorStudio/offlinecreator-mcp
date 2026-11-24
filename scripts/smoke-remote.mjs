@@ -10,7 +10,7 @@ const request = (url) =>
     method: "GET",
     redirect: "error",
     signal: AbortSignal.timeout(15_000),
-    headers: { "user-agent": "offlinecreator-mcp-release-smoke/0.1.2" },
+    headers: { "user-agent": "offlinecreator-mcp-release-smoke/0.1.5" },
   });
 
 const protectedResponse = await request(resource);
