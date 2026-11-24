@@ -193,6 +193,21 @@ type JsonRpcError = {
   data?: Array<{ "@type": string; [key: string]: unknown }>;
 };
 
+function publicJsonRpcError(error: JsonRpcError): JsonRpcError {
+  return {
+    code: error.code,
+    message: error.message,
+    ...(error.data ? { data: error.data } : {}),
+  };
+}
+
+function isJsonRpcError(error: unknown): error is JsonRpcError {
+  if (error instanceof Error || !error || typeof error !== "object")
+    return false;
+  const record = error as { code?: unknown; message?: unknown };
+  return typeof record.code === "number" && typeof record.message === "string";
+}
+
 function jsonRpcError(
   id: string | number | null,
   error: JsonRpcError,
@@ -202,7 +217,7 @@ function jsonRpcError(
     JSON.stringify({
       jsonrpc: A2A_JSONRPC_VERSION,
       id,
-      error,
+      error: publicJsonRpcError(error),
     }),
     {
       status,
@@ -956,8 +971,8 @@ export async function handleA2ARequest(input: {
       message: "Method not found",
     });
   } catch (error) {
-    if (error && typeof error === "object" && "code" in error) {
-      return jsonRpcError(id, error as JsonRpcError);
+    if (isJsonRpcError(error)) {
+      return jsonRpcError(id, error);
     }
     if (isTimeoutError(error)) {
       return jsonRpcError(
