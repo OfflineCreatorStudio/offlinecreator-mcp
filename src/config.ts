@@ -1,4 +1,5 @@
 import type { SafeImageData } from "./safe-image.js";
+import type { SafeAssetData } from "./asset-data.js";
 
 export type McpConfig = {
   apiKey?: string;
@@ -13,17 +14,30 @@ export type McpConfig = {
     maxBytes?: number;
     rootDir?: string;
   }) => Promise<SafeImageData>;
+  /** Injected only by the stdio entrypoint for multimodal asset uploads. */
+  readLocalAsset?: (input: {
+    filePath: string;
+    maxBytes?: number;
+    rootDir?: string;
+  }) => Promise<SafeAssetData>;
 };
 
 const DEFAULT_API_BASE = "https://offlinecreatorstudio.com";
 
-const TRUSTED_API_HOSTS = new Set(["offlinecreatorstudio.com"]);
+const TRUSTED_API_HOSTS = new Set([
+  "offlinecreatorstudio.com",
+  "offlinecreator-studio-staging.offlinecreator.workers.dev",
+]);
 
 export function loadConfig(env: NodeJS.ProcessEnv = process.env): McpConfig {
   const apiKey = env.OFFLINECREATOR_API_KEY?.trim();
   if (!apiKey) {
     throw new Error(
-      "OFFLINECREATOR_API_KEY is required. Create a key at /settings in OfflineCreator Studio.",
+      [
+        "OFFLINECREATOR_API_KEY is required.",
+        "Sign in or create an account: https://offlinecreatorstudio.com/auth?next=/settings",
+        "Then create an API key in Settings and set OFFLINECREATOR_API_KEY.",
+      ].join("\n"),
     );
   }
 
@@ -64,20 +78,22 @@ export function assertTrustedApiBase(
   const host = url.hostname.toLowerCase();
   const isLoopback =
     host === "localhost" || host === "127.0.0.1" || host === "::1";
+  const allowInsecure =
+    env.OFFLINECREATOR_ALLOW_INSECURE_API_BASE === "true" || isLoopback;
 
   if (url.protocol === "http:") {
-    if (!isLoopback) {
+    if (!allowInsecure) {
       throw new Error(
-        "OFFLINECREATOR_API_BASE must use https unless it is localhost.",
+        "OFFLINECREATOR_API_BASE must use https unless it is localhost or OFFLINECREATOR_ALLOW_INSECURE_API_BASE=true.",
       );
     }
   } else if (url.protocol !== "https:") {
     throw new Error("OFFLINECREATOR_API_BASE must use http or https.");
   }
 
-  if (!isLoopback && !TRUSTED_API_HOSTS.has(host)) {
+  if (!isLoopback && !TRUSTED_API_HOSTS.has(host) && !allowInsecure) {
     throw new Error(
-      `OFFLINECREATOR_API_BASE host "${host}" is not trusted. Use the OfflineCreator API host or localhost.`,
+      `OFFLINECREATOR_API_BASE host "${host}" is not trusted. Use an OfflineCreator host, localhost, or set OFFLINECREATOR_ALLOW_INSECURE_API_BASE=true for private staging.`,
     );
   }
 

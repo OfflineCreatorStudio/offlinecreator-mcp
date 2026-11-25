@@ -1,8 +1,8 @@
 {
   "name": "@offlinecreator/mcp",
-  "version": "0.1.2",
+  "version": "0.1.5",
   "mcpName": "com.offlinecreatorstudio/mcp",
-  "description": "OfflineCreator Studio MCP server for remote OAuth and local stdio clients",
+  "description": "MCP server and CLI for OfflineCreator Studio: quote, generate and retrieve AI image, video, audio and 3D with spend ceilings, OAuth or API-key auth and x402 agent payments",
   "type": "module",
   "bin": {
     "offlinecreator-mcp": "dist/index.js"
@@ -25,6 +25,18 @@
     "./oauth-bridge": {
       "types": "./dist/oauth-bridge.d.ts",
       "import": "./dist/oauth-bridge.js"
+    },
+    "./agent-readiness": {
+      "types": "./dist/agent-readiness.d.ts",
+      "import": "./dist/agent-readiness.js"
+    },
+    "./a2a": {
+      "types": "./dist/a2a.d.ts",
+      "import": "./dist/a2a.js"
+    },
+    "./client": {
+      "types": "./dist/client.d.ts",
+      "import": "./dist/client.js"
     }
   },
   "files": [
@@ -41,7 +53,7 @@
     "format:check": "prettier --check .",
     "start": "node dist/index.js",
     "typecheck": "tsc -p tsconfig.json --noEmit",
-    "test": "npm run build && node --test dist/config.test.js dist/oauth-bridge.test.js dist/safe-fs.test.js dist/server.test.js",
+    "test": "npm run build && node --test dist/agent-readiness.test.js dist/a2a.test.js dist/config.test.js dist/oauth-bridge.test.js dist/oauth-bridge-1f596af.test.js dist/safe-fs.test.js dist/safe-asset.test.js dist/safe-image.test.js dist/server.test.js dist/x402.test.js dist/outcomes.test.js dist/protocol-compatibility.test.js dist/client.test.js",
     "test:stdio": "npm run build && node scripts/smoke-stdio.mjs",
     "test:remote": "node scripts/smoke-remote.mjs",
     "audit:dependencies": "npm audit --audit-level=high",
@@ -68,7 +80,9 @@
     "cursor",
     "claude",
     "image-generation",
-    "video-generation"
+    "video-generation",
+    "x402",
+    "oauth"
   ],
   "license": "MIT",
   "homepage": "https://offlinecreatorstudio.com/mcp-cli",
@@ -87,8 +101,11 @@
     "access": "public"
   },
   "dependencies": {
-    "@modelcontextprotocol/server": "^2.0.0",
-    "zod": "^4.4.3"
+    "@modelcontextprotocol/server": "^2.4.0",
+    "@x402/evm": "^2.30.0",
+    "@x402/fetch": "^2.30.0",
+    "viem": "^2.55.13",
+    "zod": "^4.6.7"
   },
   "devDependencies": {
     "@types/node": "^20",

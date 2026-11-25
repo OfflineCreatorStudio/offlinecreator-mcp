@@ -1,6 +1,6 @@
 # Release and supply-chain operations
 
-Version `0.1.2` is the current release identity. Release automation never edits
+Version `0.1.5` is the current release identity. Release automation never edits
 versions. A maintainer must update every synchronized manifest in a reviewed
 change before a future version can pass validation.
 
@@ -37,14 +37,14 @@ Use Node.js 24 and npm 11.5.1 or newer:
 npm ci
 npm run validate
 npm run test:remote
-RELEASE_TAG=v0.1.2 npm run release:prepare
-RELEASE_TAG=v0.1.2 npm run release:verify
+RELEASE_TAG=v0.1.5 npm run release:prepare
+RELEASE_TAG=v0.1.5 npm run release:verify
 ```
 
 PowerShell:
 
 ```powershell
-$env:RELEASE_TAG = "v0.1.2"
+$env:RELEASE_TAG = "v0.1.5"
 npm run release:prepare
 npm run release:verify
 Remove-Item Env:RELEASE_TAG
@@ -108,15 +108,15 @@ v=MCPv1; k=ed25519; p=<base64 Ed25519 public key>
 
 Do not put the private key in DNS, source, workflow YAML, repository secrets, or
 logs. After DNS propagation, manually dispatch `Publish MCP Registry Metadata`
-with `v0.1.2` and approve the environment deployment. Registry versions are
+with `v0.1.5` and approve the environment deployment. Registry versions are
 immutable, so never rerun a successful publication for the same version.
 
 ## Maintainer release sequence
 
 1. Merge only after all required checks pass.
-2. Create an exact protected tag such as `v0.1.2` at the reviewed commit.
+2. Create an exact protected tag such as `v0.1.5` at the reviewed commit.
 3. Review and approve the `npm-production` deployment.
 4. Verify npm provenance and the immutable GitHub Release with
-   `gh release verify v0.1.2`.
+   `gh release verify v0.1.5`.
 5. After npm propagation, manually dispatch and approve the MCP Registry
    workflow.

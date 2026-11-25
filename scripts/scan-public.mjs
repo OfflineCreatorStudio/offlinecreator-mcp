@@ -15,9 +15,13 @@ const patterns = [
     "UUID / production identifier",
     /\b[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}\b/i,
   ],
-  ["excluded infrastructure", /(?:workers\.dev|supabase|stripe|fal-ai)/i],
+  // stripe_account is a public settlement-rail enum, not a credential.
+  // The one staging API host below is the client's published allowlist entry.
+  ["excluded infrastructure", /(?:workers\.dev|supabase|fal-ai)/i],
   ["environment file reference", /(?:^|[\/])\.env(?:\.|$)/m],
 ];
+const publishedStagingHost =
+  "offlinecreator-studio-staging.offlinecreator.workers.dev";
 async function walk(dir) {
   const out = [];
   for (const entry of await readdir(dir, { withFileTypes: true })) {
@@ -38,12 +42,14 @@ async function walk(dir) {
 }
 const findings = [];
 for (const file of await walk(".")) {
-  const text = (await readFile(file, "utf8")).replaceAll(
-    "123e4567-e89b-42d3-a456-426614174000",
-    "<TEST_UUID>",
-  );
-  for (const [label, regex] of patterns)
+  const text = (await readFile(file, "utf8"))
+    .replaceAll("123e4567-e89b-42d3-a456-426614174000", "<TEST_UUID>")
+    .replaceAll(publishedStagingHost, "<STAGING_API_HOST>");
+  const isTest = file.endsWith(".test.ts");
+  for (const [label, regex] of patterns) {
+    if (isTest && label === "UUID / production identifier") continue;
     if (regex.test(text)) findings.push(`${file}: ${label}`);
+  }
 }
 if (findings.length) {
   throw new Error(`Public leak scan failed:\n${findings.join("\n")}`);

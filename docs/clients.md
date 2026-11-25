@@ -45,6 +45,30 @@ claude mcp add offlinecreator --transport http https://mcp.offlinecreatorstudio.
 
 In Claude, choose **Add custom connector** and enter `https://mcp.offlinecreatorstudio.com/mcp`. Claude custom connectors support remote MCP even though OfflineCreator Studio is not currently eligible for Anthropic's public Connectors Directory under its AI media policy.
 
+## Hermes
+
+Add to `~/.hermes/config.yaml`, then run `/reload-mcp`:
+
+```yaml
+mcp_servers:
+  offlinecreator:
+    url: "https://mcp.offlinecreatorstudio.com/mcp"
+```
+
+## Windsurf
+
+Add to `%USERPROFILE%\.codeium\windsurf\mcp_config.json`:
+
+```json
+{
+  "mcpServers": {
+    "offlinecreator": {
+      "serverUrl": "https://mcp.offlinecreatorstudio.com/mcp"
+    }
+  }
+}
+```
+
 ## Local stdio fallback
 
 ```json

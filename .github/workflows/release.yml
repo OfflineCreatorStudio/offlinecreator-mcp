@@ -7,7 +7,7 @@ on:
   workflow_dispatch:
     inputs:
       tag:
-        description: Existing version tag to release (for example, v0.1.2)
+        description: Existing version tag to release (for example, v0.1.5)
         required: true
         type: string
 
@@ -92,6 +92,9 @@ jobs:
           ref: ${{ env.RELEASE_TAG }}
           fetch-depth: 0
           persist-credentials: false
+      - name: Read the package version
+        id: package
+        run: echo "version=$(node -p "require('./package.json').version")" >> "$GITHUB_OUTPUT"
       - name: Set up Node.js for trusted publishing
         uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
         with:
@@ -127,7 +130,7 @@ jobs:
         uses: actions/attest@1e69f48acb82d1966a394da916b4c1698aa569d6 # v4.2.2
         with:
           subject-path: release/*.tgz
-          sbom-path: release/offlinecreator-mcp-0.1.2.cyclonedx.json
+          sbom-path: release/offlinecreator-mcp-${{ steps.package.outputs.version }}.cyclonedx.json
       - name: Preserve attestation bundles
         shell: bash
         env:
@@ -138,7 +141,7 @@ jobs:
           cp "$PROVENANCE_BUNDLE" release/provenance.attestation.json
           cp "$SBOM_BUNDLE" release/sbom.attestation.json
       - name: Publish to npm with Trusted Publishing OIDC
-        run: npm publish ./release/offlinecreator-mcp-0.1.2.tgz --access public
+        run: npm publish "./release/offlinecreator-mcp-${{ steps.package.outputs.version }}.tgz" --access public
       - name: Create immutable-ready GitHub release
         shell: bash
         env:
